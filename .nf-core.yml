@@ -1,0 +1,17 @@
+lint:
+  files_unchanged:
+    - lib/NfcoreTemplate.groovy
+    - docs/images/nf-core-scnanoseq_logo_dark.png
+    - docs/images/nf-core-scnanoseq_logo_light.png
+  template_strings: false
+nf_core_version: 3.2.1
+repository_type: pipeline
+template:
+  author: Austyn Trull, Lara Ianov
+  description: Single-cell/nuclei pipeline for data derived from Oxford Nanopore
+  force: false
+  is_nfcore: true
+  name: scnanoseq
+  org: nf-core
+  outdir: .
+  version: 1.0.0
