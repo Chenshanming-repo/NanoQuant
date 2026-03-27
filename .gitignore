@@ -13,3 +13,4 @@ samplesheet.csv
 *.swp
 input*
 example/TE.bed
+plugins/mybc/

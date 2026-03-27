@@ -68,6 +68,7 @@ include { SPLIT_FILE                        } from "../modules/local/split_file"
 include { SPLIT_FILE as SPLIT_FILE_BC_FASTQ } from "../modules/local/split_file"
 include { SPLIT_FILE as SPLIT_FILE_BC_CSV   } from "../modules/local/split_file"
 include { BLAZE                             } from "../modules/local/blaze"
+include { BARCODE_OPTIM                     } from "../modules/local/barcode_optim"
 include { PREEXTRACT_FASTQ                  } from "../modules/local/preextract_fastq.nf"
 include { READ_COUNTS                       } from "../modules/local/read_counts.nf"
 include { CORRECT_BARCODES                  } from "../modules/local/correct_barcodes"
@@ -317,12 +318,23 @@ workflow SCNANOSEQ {
     // MODULE: Generate whitelist
     //
 
-    BLAZE ( ch_trimmed_reads_combined, ch_blaze_whitelist )
+    ch_putative_bc = Channel.empty()
+    ch_gt_whitelist = Channel.empty()
+    ch_whitelist_bc_count = Channel.empty()
 
-    ch_putative_bc = BLAZE.out.putative_bc
-    ch_gt_whitelist = BLAZE.out.whitelist
-    ch_whitelist_bc_count = BLAZE.out.bc_count
-    ch_versions = ch_versions.mix(BLAZE.out.versions)
+    if (params.barcode_tool == 'blaze') {
+        BLAZE ( ch_trimmed_reads_combined, ch_blaze_whitelist )
+        ch_putative_bc = BLAZE.out.putative_bc
+        ch_gt_whitelist = BLAZE.out.whitelist
+        ch_whitelist_bc_count = BLAZE.out.bc_count
+        ch_versions = ch_versions.mix(BLAZE.out.versions)
+    } else if (params.barcode_tool == 'barcode_optim') {
+        BARCODE_OPTIM ( ch_trimmed_reads_combined, genome_fasta, gtf )
+        ch_putative_bc = BARCODE_OPTIM.out.putative_bc
+        ch_gt_whitelist = BARCODE_OPTIM.out.whitelist
+        ch_whitelist_bc_count = BARCODE_OPTIM.out.bc_count
+        ch_versions = ch_versions.mix(BARCODE_OPTIM.out.versions)
+    }
 
     ch_split_bc_fastqs = ch_trimmed_reads_combined
     ch_split_bc = ch_putative_bc
