@@ -21,7 +21,10 @@ process BARCODE_OPTIM {
     script:
     def args       = task.ext.args ?: ''
     def prefix     = task.ext.prefix ?: "${meta.id}"
+
+    def raw_format = params.barcode_format ? params.barcode_format.toString().trim() : ""
     
+    def barcode_format_ver = raw_format.replaceFirst(/^(?i)["']?10x_/, "").replaceFirst(/["']$/, "")
     """
     python /app/barcode_optim/main.py \\
         --auto-detect-cells \\
@@ -32,6 +35,7 @@ process BARCODE_OPTIM {
         --do-post-isoquant \\
         --reference-fasta ${fasta} \\
         --genedb ${gtf} \\
+	--10x-kit-version ${barcode_format_ver} \\
         --isoquant-output isoquant_sc \\
         --isoquant-threads $task.cpus \\
         ${args} \\

@@ -329,7 +329,7 @@ workflow SCNANOSEQ {
         ch_whitelist_bc_count = BLAZE.out.bc_count
         ch_versions = ch_versions.mix(BLAZE.out.versions)
     } else if (params.barcode_tool == 'barcode_optim') {
-        BARCODE_OPTIM ( ch_trimmed_reads_combined, genome_fasta, gtf )
+        BARCODE_OPTIM ( ch_trimmed_reads_combined, genome_fasta.map{ it[1] }, gtf.map{ it[1] } )
         ch_putative_bc = BARCODE_OPTIM.out.putative_bc
         ch_gt_whitelist = BARCODE_OPTIM.out.whitelist
         ch_whitelist_bc_count = BARCODE_OPTIM.out.bc_count
